@@ -30,6 +30,13 @@ model Appointment {
 
   userId String // id da clínica (user)
   user   User   @relation(fields: [userId], references: [id])
+
+  // 🔹 UM profissional por agendamento
+  professionalId String?
+  professional   Professional? @relation(fields: [professionalId], references: [id])
+
+  @@index([appointmentDate])
+  @@index([professionalId, appointmentDate])
 }
 
 model Remider {
@@ -45,6 +52,7 @@ model Remider {
 
 model Service {
   id       String  @id @default(uuid())
+  code     String  @unique
   name     String
   price    Int
   duration Int
@@ -57,6 +65,21 @@ model Service {
   user   User   @relation(fields: [userId], references: [id])
 
   appointement Appointment[]
+}
+
+model Professional {
+  id          String   @id @default(cuid())
+  name        String   @unique // 🔹 agora pode usar where: { name }
+  specialties String[] @default([]) // ex.: ["manicure", "gel", "nail art"]
+  status      Boolean  @default(true)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  appointments Appointment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Plan {
@@ -102,6 +125,8 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  professionals Professional[]
 }
 
 model Account {
