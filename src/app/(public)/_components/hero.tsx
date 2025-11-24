@@ -13,7 +13,7 @@ export function Hero() {
         <main className="flex items-center justify-center">
           <article className="flex-[2] max-w-3xl space-y-8 flex flex-col jus">
             <h1 className="text-4xl lg:text-5xl font-bold max-w-2xl tracking-tight">
-              Elegância que se vê na ponta dos dedos!
+              Elegância em cada detalhe!
             </h1>
             <p className="text-base md:text-lg text-gray-500">
               Nós somos uma plataforma para profissionais da saúde com foco em agilizar seu atendimento de forma simplicada e organizada.
@@ -25,15 +25,17 @@ export function Hero() {
           </article>
 
           <div className="hidden lg:block">
-            <Image
-              src={fotoImg4}
-              alt="Foto ilustrativa profissional"
-              width={340}
-              height={400}
-              className="object-contain"
-              quality={100}
-              priority
-            />
+            <div className="w-[260px] h-[260px] rounded-full overflow-hidden bg-[#FBEFF3] mx-auto">
+              <Image
+                src={fotoImg4}
+                alt="Foto ilustrativa profissional"
+                width={260}
+                height={260}
+                className="w-full h-full object-cover"
+                quality={100}
+                priority
+              />
+            </div>
           </div>
 
 
