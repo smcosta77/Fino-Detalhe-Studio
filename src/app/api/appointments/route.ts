@@ -5,6 +5,7 @@ import { createAppointment } from "@/server/appointments/createAppointment";
 import type { CreateAppointmentDTO } from "@/dtos/appointment";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 // GET /api/appointments?date=YYYY-MM-DD
 // "calendário" do dia: lista todos os agendamentos com serviço e profissional
