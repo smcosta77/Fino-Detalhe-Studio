@@ -1,12 +1,14 @@
 import { Card, CardContent } from "@/components/ui/card";
 import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, MessageCircle, Instagram, Music2 } from "lucide-react";
 import fotoImg from "@/../public/foto1.png";
 import fotoImg1 from "@/../public/image1.jpg";
 import fotoImg2 from "@/../public/image2.jpg";
 import fotoImg3 from "@/../public/image3.jpg";
 import fotoImg4 from "@/../public/image4.jpg";
+import fotoImg5 from "@/../public/image5.jpeg";
+
 
 type Clinica = {
   id: string;
@@ -22,19 +24,18 @@ const CLINICAS: Clinica[] = [
     nome: "Aplicação do alongamento",
     href: "/clinica/123",
     ativa: true,
-    imagem: fotoImg1,
+    imagem: fotoImg2,
   },
   {
     id: "124",
     nome: "Banho de gel",
     href: "/clinica/124",
     ativa: true,
-    imagem: fotoImg2,
+    imagem: fotoImg5,
   },
   {
     id: "125",
     nome: "Manicure simples",
-
     href: "/clinica/125",
     ativa: true,
     imagem: fotoImg3,
@@ -57,7 +58,7 @@ export function Professionals() {
           Serviços Disponíveis
         </h2>
 
-        {/* centraliza e limita largura dos cards no mobile */}
+        {/* cards de serviços */}
         <section className="grid grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 lg:grid-cols-4 sm:gap-6">
           {CLINICAS.map((c) => (
             <Card
@@ -87,9 +88,10 @@ export function Professionals() {
                     <h3 className="text-base font-semibold sm:text-lg">
                       {c.nome}
                     </h3>
-
                   </div>
-                  {c.ativa && <span className="h-2.5 w-2.5 rounded-full bg-[#e8b6bc]" />}
+                  {c.ativa && (
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#e8b6bc]" />
+                  )}
                 </div>
 
                 <Link
@@ -104,12 +106,82 @@ export function Professionals() {
                   "
                 >
                   Agendar horário
-                  <ArrowRight className="ml-2" />
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </CardContent>
             </Card>
           ))}
         </section>
+
+        {/* bloco de info + redes sociais abaixo dos cards */}
+        <div className="mt-12 grid gap-8 md:grid-cols-3">
+          <div>
+            <h3 className="text-2xl font-semibold mb-2">Fino Detalhe Studio</h3>
+            <p className="mb-4 text-sm text-slate-700">
+              Cuidamos das suas unhas com carinho, técnica e muito detalhe –
+              um momento de autocuidado para mulheres e homens.
+            </p>
+            <a
+              href="https://wa.me/5511992072006?text=Olá, vim pelo site e gostaria de mais informações sobre os serviços."
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-md bg-emerald-500 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600 transition-colors"
+            >
+              <MessageCircle className="h-5 w-5" />
+              Contato via WhatsApp
+            </a>
+          </div>
+
+          <div>
+            <h3 className="text-2xl font-semibold mb-2">Contatos</h3>
+
+            <p className="text-sm text-slate-700">
+              <span className="font-medium">Telefone:</span> 11 99207-2006
+            </p>
+            <p className="text-sm text-slate-700">
+              <span className="font-medium">Morada:</span> Rua Domenico Sarri
+              09, 2870-459 Jd. Myrna
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-2xl font-semibold mb-2">Redes Sociais</h3>
+            <div className="flex gap-4">
+              {/* WhatsApp atalho */}
+              <a
+                href="https://wa.me/5511992072006?text=Olá, vim pelo site e gostaria de agendar um horário."
+                target="_blank"
+                rel="noreferrer"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-emerald-600 hover:bg-emerald-50 transition-colors"
+                aria-label="Fale conosco no WhatsApp"
+              >
+                <MessageCircle className="h-5 w-5" />
+              </a>
+
+              {/* Instagram */}
+              <a
+                href="#"
+                target="_blank"
+                rel="noreferrer"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-pink-600 hover:bg-pink-50 transition-colors"
+                aria-label="Visite nosso Instagram"
+              >
+                <Instagram className="h-5 w-5" />
+              </a>
+
+              {/* TikTok (ícone genérico de vídeo/música) */}
+              <a
+                href="#"
+                target="_blank"
+                rel="noreferrer"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-slate-800 hover:bg-slate-50 transition-colors"
+                aria-label="Acompanhe no TikTok"
+              >
+                <Music2 className="h-5 w-5" />
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
