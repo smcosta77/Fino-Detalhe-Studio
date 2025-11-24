@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import doctorimage from "@/../public/doctor-hero.png";
 import fotoImg4 from "@/../public/image4.jpg";
+import novaImage from "@/../public/nova_image.jpeg"
+
 
 export function Hero() {
   return (
@@ -11,7 +13,7 @@ export function Hero() {
         <main className="flex items-center justify-center">
           <article className="flex-[2] max-w-3xl space-y-8 flex flex-col jus">
             <h1 className="text-4xl lg:text-5xl font-bold max-w-2xl tracking-tight">
-              As melhores profissionais em um único local!
+              Elegância que se vê na ponta dos dedos!
             </h1>
             <p className="text-base md:text-lg text-gray-500">
               Nós somos uma plataforma para profissionais da saúde com foco em agilizar seu atendimento de forma simplicada e organizada.

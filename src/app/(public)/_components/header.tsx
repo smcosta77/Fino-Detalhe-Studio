@@ -14,6 +14,7 @@ import { Button } from "../../../components/ui/button";
 import { LogIn, Menu } from "lucide-react";
 import { useSession } from 'next-auth/react'
 import { handleRegister } from '../_actions/login'
+import novaImage from "@/../public/nova_image.jpeg"
 
 export function Header() {
   const { data: session, status } = useSession();
@@ -69,9 +70,9 @@ export function Header() {
       <div className="container mx-auto flex items-center justify-between">
         <Link
           href="/"
-          className="text-3xl font-bold text-zinc-900"
+          className="text-2xl font-bold text-zinc-900"
         >
-          Odonto<span className="text-emerald-500">PRO</span>
+          FinoDetalhe<span className="text-[#bb5b6a]"><b></b>Studio</span>
         </Link>
 
         <nav className="hidden md:flex items-center space-x-4">
