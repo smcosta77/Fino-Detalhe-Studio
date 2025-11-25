@@ -1,35 +1,39 @@
 // src/types/next-auth.d.ts
-import { DefaultSession } from "next-auth";
-import { UserRole } from "@prisma/client";
+import type { DefaultSession, DefaultUser } from "next-auth";
+import type { UserRole } from "@prisma/client";
 
 declare module "next-auth" {
-    // Dados que vêm do Prisma (User)
-    interface User {
+    interface User extends DefaultUser {
         id: string;
-        name: string;
-        email: string;
-        emailVerified?: null | string | boolean;
-        image?: string;
-        stripeCustomerId?: string;
-        time: string[];      // mantém os nomes que você já usa hoje
-        addres?: string;     // idem (se quiser, depois renomeia pra "address")
+        role: UserRole;
+
+        stripe_customer_id?: string | null;
+        times?: string[];
+        address?: string;
         phone?: string;
         status?: boolean;
-        createdAt: string;
-        updatedAt: string;
+        timeZone?: string | null;
 
-        // 👉 novo campo
-        role: UserRole;
+        createdAt?: string | Date;
+        updatedAt?: string | Date;
     }
-
-    // Sessão que o app consome (client/server)
     interface Session {
-        user: DefaultSession["user"] & User;
+        user: DefaultSession["user"] & {
+            id: string;
+            role: UserRole;
+            stripe_customer_id?: string | null;
+            times?: string[];
+            address?: string;
+            phone?: string;
+            status?: boolean;
+            timeZone?: string | null;
+        };
     }
 }
 
 declare module "next-auth/jwt" {
     interface JWT {
         role?: UserRole;
+        stripe_customer_id?: string | null;
     }
 }

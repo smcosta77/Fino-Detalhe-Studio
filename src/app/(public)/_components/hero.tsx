@@ -24,19 +24,7 @@ export function Hero() {
             </Button>
           </article>
 
-          <div className="hidden lg:block">
-            <div className="w-[260px] h-[260px] rounded-full overflow-hidden bg-[#FBEFF3] mx-auto">
-              <Image
-                src={imageTop}
-                alt="Foto ilustrativa profissional"
-                width={260}
-                height={260}
-                className="w-full h-full object-cover"
-                quality={100}
-                priority
-              />
-            </div>
-          </div>
+
 
 
         </main>

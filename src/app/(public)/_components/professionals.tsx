@@ -24,28 +24,28 @@ const CLINICAS: Clinica[] = [
   {
     id: "123",
     nome: "Aplicação do alongamento",
-    href: "/dashboard/assistente-agenda",
+    href: "/assistente-agenda",
     ativa: true,
     imagem: fotoImg2,
   },
   {
     id: "124",
     nome: "Banho de gel",
-    href: "/dashboard/assistente-agenda",
+    href: "/assistente-agenda",
     ativa: true,
     imagem: fotoImg5,
   },
   {
     id: "125",
     nome: "Manicure simples",
-    href: "/dashboard/assistente-agenda",
+    href: "/assistente-agenda",
     ativa: true,
     imagem: imageSimples,
   },
   {
     id: "126",
     nome: "Combo mãos e pés",
-    href: "/dashboard/assistente-agenda",
+    href: "/assistente-agenda",
     ativa: true,
     imagem: imageCombo,
   },
@@ -140,10 +140,7 @@ export function Professionals() {
             <p className="text-sm text-slate-700">
               <span className="font-medium">Telefone:</span> 11 99207-2006
             </p>
-            <p className="text-sm text-slate-700">
-              <span className="font-medium">Morada:</span> Rua Domenico Sarri
-              09, 2870-459 Jd. Myrna
-            </p>
+
           </div>
 
           <div>
@@ -162,7 +159,7 @@ export function Professionals() {
 
               {/* Instagram */}
               <a
-                href="#"
+                href="https://www.instagram.com/finodetalhestudio?igsh=MWE3MzY4anV5Ynp6OA=="
                 target="_blank"
                 rel="noreferrer"
                 className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-pink-600 hover:bg-pink-50 transition-colors"

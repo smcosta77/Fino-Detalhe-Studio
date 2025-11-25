@@ -1,9 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
+// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,24 +10,26 @@ datasource db {
 
 model Appointment {
   id              String   @id @default(ulid())
-  name            String // Nome do pacient
+  name            String // Nome do paciente
   email           String
   phone           String
   appointmentDate DateTime // Data do agendamento
-  time            String // horário escolhido
+  time            String // Horário escolhido (HH:mm)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Serviço
   serviceId String
   service   Service @relation(fields: [serviceId], references: [id])
 
-  userId String // id da clínica (user)
+  // Clínica (user dono da agenda)
+  userId String
   user   User   @relation(fields: [userId], references: [id])
 
-  // 🔹 UM profissional por agendamento
-  professionalId String?
-  professional   Professional? @relation(fields: [professionalId], references: [id])
+  // Profissional responsável por este horário
+  professionalId String
+  professional   Professional @relation(fields: [professionalId], references: [id])
 
   @@index([appointmentDate])
   @@index([professionalId, appointmentDate])
@@ -68,7 +65,7 @@ model Service {
 
 model Professional {
   id          String   @id @default(cuid())
-  name        String   @unique // 🔹 agora pode usar where: { name }
+  name        String   @unique // agora dá pra usar where: { name }
   specialties String[] @default([]) // ex.: ["manicure", "gel", "nail art"]
   status      Boolean  @default(true)
 
@@ -126,8 +123,7 @@ model User {
 
   accounts      Account[]
   sessions      Session[]
-  // Optional for WebAuthn support
-  Authenticator Authenticator[]
+  Authenticator Authenticator[] // WebAuthn opcional
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -174,7 +170,6 @@ model VerificationToken {
   @@id([identifier, token])
 }
 
-// Optional for WebAuthn support
 model Authenticator {
   credentialID         String  @unique
   userId               String

@@ -102,8 +102,9 @@ async function createAppointmentFromBooking(
     // valor total sempre calculado pelo backend
     const total = calculateTotalPrice(booking.serviceCodes);
     const services = getServicesByCodes(booking.serviceCodes);
+    // (services está pronto se quiser logar / usar depois)
 
-    // pega o primeiro serviço para vincular ao Appointment (se quiser, pode adaptar para multi-serviço)
+    // pega o primeiro serviço para vincular ao Appointment
     const mainServiceCode = booking.serviceCodes[0];
     const mainService = await prisma.service.findUnique({
         where: { code: mainServiceCode },
@@ -179,13 +180,15 @@ export async function POST(req: Request) {
         const reply = await callGroq(body.messages);
         const { cleanText, booking } = extractBookingJson(reply);
 
-        // resposta padrão = só o texto da IA
         let finalText = cleanText;
+        let completed = false; // <- flag para o frontend
 
         if (booking?.confirmado) {
             const result = await createAppointmentFromBooking(booking);
 
             if (result.status === "created") {
+                completed = true;
+
                 finalText += `
 
 ✅ Agendamento registado com sucesso.
@@ -199,7 +202,7 @@ O agendamento NÃO foi criado. Por favor, escolha outro horário ou outra profis
             }
         }
 
-        return NextResponse.json({ reply: finalText });
+        return NextResponse.json({ reply: finalText, completed });
     } catch (error) {
         console.error("[AI_AGENDA_ERROR]", error);
         return NextResponse.json(

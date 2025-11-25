@@ -28,7 +28,7 @@ type Clinica = {
   imagem?: string | StaticImageData;
 };
 
-export function SidebarDashboard({ children }: { children: React.ReactNode }) {
+export function SidebarCliente({ children }: { children: React.ReactNode }) {
 
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -86,6 +86,13 @@ export function SidebarDashboard({ children }: { children: React.ReactNode }) {
               isCollapsed={isCollapsed}
               icon={<Settings className="w-6 h-6" />}
             />
+            <SidebarLink
+              href="/dashboard/plans"
+              label="Planos"
+              pathname={pathname}
+              isCollapsed={isCollapsed}
+              icon={<Banknote className="w-6 h-6" />}
+            />
           </nav>
         )}
 
@@ -98,7 +105,7 @@ export function SidebarDashboard({ children }: { children: React.ReactNode }) {
               </span>
 
               <SidebarLink
-                href="/dashboard/agenda"
+                href="/dashboard"
                 label="Agendamento"
                 pathname={pathname}
                 isCollapsed={isCollapsed}
@@ -111,17 +118,28 @@ export function SidebarDashboard({ children }: { children: React.ReactNode }) {
                 isCollapsed={isCollapsed}
                 icon={<Folder className="w-6 h-6" />}
               />
-
-              <SidebarLink
-                href="/dashboard"
-                label="Valores"
-                pathname={pathname}
-                isCollapsed={isCollapsed}
-                icon={<Folder className="w-6 h-6" />}
-              />
             </div>
 
+            <div className="mt-6 flex flex-col gap-1">
+              <span className="block text-sm text-gray-400 font-medium uppercase">
+                Configurações
+              </span>
 
+              <SidebarLink
+                href="/dashboard/profile"
+                label="Meu Perfil"
+                pathname={pathname}
+                isCollapsed={isCollapsed}
+                icon={<Settings className="w-6 h-6" />}
+              />
+              <SidebarLink
+                href="/dashboard/plans"
+                label="Planos"
+                pathname={pathname}
+                isCollapsed={isCollapsed}
+                icon={<Banknote className="w-6 h-6" />}
+              />
+            </div>
           </CollapsibleContent>
         </Collapsible>
 
@@ -145,7 +163,7 @@ export function SidebarDashboard({ children }: { children: React.ReactNode }) {
                   <List className="w-5 h-5" />
                 </Button>
               </SheetTrigger>
-              <h1 className="text-base md:text-lg font-semibold">Fino Detalhe</h1>
+              <h1 className="text-base md:text-lg font-semibold">Nails Bia</h1>
             </div>
 
             <SheetContent side="right" className="sm:max-w-xs text-black px-4">

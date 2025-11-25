@@ -1,5 +1,5 @@
 // src/config/salao.ts
-export const SALAO_NOME = "NailsPro Studio";
+export const SALAO_NOME = "Fino Detalhe Studio";
 
 export const HORARIO_FUNCIONAMENTO = {
     dias: ["segunda", "terça", "quarta", "quinta", "sexta", "sábado"],
