@@ -1,9 +1,14 @@
 // src/lib/auth.ts
 import NextAuth, { type NextAuthConfig } from "next-auth";
-import GitHub from "next-auth/providers/github";
+import Google from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "./prisma";
 import { UserRole } from "@prisma/client";
+
+if (!process.env.AUTH_GOOGLE_ID || !process.env.AUTH_GOOGLE_SECRET) {
+
+    throw new Error("Missing AUTH_GOOGLE_ID or AUTH_GOOGLE_SECRET");
+}
 
 export const authConfig = {
     adapter: PrismaAdapter(prisma),
@@ -15,9 +20,9 @@ export const authConfig = {
     },
 
     providers: [
-        GitHub({
-            clientId: process.env.GITHUB_ID!,
-            clientSecret: process.env.GITHUB_SECRET!,
+        Google({
+            clientId: process.env.AUTH_GOOGLE_ID,
+            clientSecret: process.env.AUTH_GOOGLE_SECRET,
         }),
     ],
 
