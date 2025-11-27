@@ -24,7 +24,7 @@ export function Header() {
   const navItems = [{ href: "#sucesso", label: "Sucesso" }];
 
   async function handleLogin() {
-    await handleRegister("github");
+    await handleRegister("google");
   }
 
   const NavLinks = () => (
