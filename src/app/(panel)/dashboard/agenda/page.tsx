@@ -1,3 +1,4 @@
+// src/app/(panel)/dashboard/agenda/page.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -23,10 +24,11 @@ type Appointment = {
   email: string;
   phone: string;
   appointmentDate: string;
-  time: string;
+  time: string; // HH:mm
   service: Service | null;          // serviço principal
   professional: Professional | null;
   services?: AppointmentService[];  // todos os serviços do agendamento
+  totalDuration?: number;           // minutos (vem do backend)
 };
 
 type ApiResponse = {
@@ -78,23 +80,53 @@ export default function AgendaDoDiaPage() {
 
   const appointmentsByHour = useMemo(() => {
     const map = new Map<string, Appointment[]>();
+    const validHours = new Set(WORKING_HOURS);
 
+    // inicializa todos os horários
     for (const hour of WORKING_HOURS) {
       const label = `${String(hour).padStart(2, "0")}:00`;
       map.set(label, []);
     }
 
     for (const appt of appointments) {
-      const [h] = appt.time.split(":");
-      const key = `${h.padStart(2, "0")}:00`;
+      // 1) calcula duração total em minutos
+      const temMultiplos = appt.services && appt.services.length > 0;
 
-      if (!map.has(key)) {
-        map.set(key, []);
+      const durationFromServices = temMultiplos
+        ? appt.services!.reduce(
+          (sum, s) => sum + (s.service?.duration ?? 0),
+          0,
+        )
+        : appt.service?.duration ?? 0;
+
+      const baseDuration =
+        typeof appt.totalDuration === "number" && appt.totalDuration > 0
+          ? appt.totalDuration
+          : durationFromServices;
+
+      // se por algum motivo vier 0, considera 60 min
+      const durationMinutes = baseDuration > 0 ? baseDuration : 60;
+
+      // 2) converte início + duração em "quantas horas ocupa"
+      const [hStr, mStr] = appt.time.split(":");
+      const startMinutes = Number(hStr) * 60 + Number(mStr);
+      const durationHours = Math.max(1, Math.ceil(durationMinutes / 60));
+      const startHour = Math.floor(startMinutes / 60);
+
+      // 3) espalha o agendamento pelos blocos de hora que ele ocupa
+      for (let k = 0; k < durationHours; k++) {
+        const hourSlot = startHour + k;
+        if (!validHours.has(hourSlot)) continue;
+
+        const label = `${String(hourSlot).padStart(2, "0")}:00`;
+        const list = map.get(label);
+        if (list) {
+          list.push(appt);
+        }
       }
-      map.get(key)!.push(appt);
     }
 
-    // ordena os agendamentos dentro de cada horário por time
+    // ordena dentro de cada horário pelo time (HH:mm)
     for (const [key, list] of map.entries()) {
       list.sort((a, b) => a.time.localeCompare(b.time));
       map.set(key, list);
@@ -133,11 +165,7 @@ export default function AgendaDoDiaPage() {
           <p className="text-sm text-slate-500">Carregando agendamentos...</p>
         )}
 
-        {error && (
-          <p className="text-sm text-red-500">
-            {error}
-          </p>
-        )}
+        {error && <p className="text-sm text-red-500">{error}</p>}
 
         {!loading && !error && appointments.length === 0 && (
           <p className="text-sm text-slate-500">
@@ -172,18 +200,28 @@ export default function AgendaDoDiaPage() {
                     ) : (
                       <div className="flex flex-col gap-2">
                         {slotAppointments.map((appt) => {
-                          const temMultiplos = appt.services && appt.services.length > 0;
+                          const temMultiplos =
+                            appt.services && appt.services.length > 0;
 
                           const labelServico = temMultiplos
-                            ? appt.services!.map((s) => s.service.name).join(" + ")
+                            ? appt.services!
+                              .map((s) => s.service.name)
+                              .join(" + ")
                             : appt.service?.name ?? "Serviço";
 
-                          const totalDuration = temMultiplos
+                          const durationFromServices = temMultiplos
                             ? appt.services!.reduce(
-                              (sum, s) => sum + (s.service.duration ?? 0),
-                              0
+                              (sum, s) =>
+                                sum + (s.service.duration ?? 0),
+                              0,
                             )
                             : appt.service?.duration ?? 0;
+
+                          const totalDuration =
+                            typeof appt.totalDuration === "number" &&
+                              appt.totalDuration > 0
+                              ? appt.totalDuration
+                              : durationFromServices;
 
                           return (
                             <div
