@@ -1,7 +1,7 @@
 // src/app/(panel)/dashboard/page.tsx
 import getSession from "@/lib/getSesstion";
 import { redirect } from "next/navigation";
-import AssistenteAgendaPage from "@/app/(public)/assistente-agenda/page";
+import AssistenteAgendaPage from "@/app/(panel)/dashboard/assistente-agenda/page";
 
 export default async function Dashboard() {
   const session = await getSession();

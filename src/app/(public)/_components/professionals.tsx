@@ -1,16 +1,18 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
-import { ArrowRight, MessageCircle, Instagram, Music2 } from "lucide-react";
+import { ArrowRight, MessageCircle, Instagram, Music2, LogIn } from "lucide-react";
 import fotoImg from "@/../public/foto1.png";
-import fotoImg1 from "@/../public/image1.jpg";
 import fotoImg2 from "@/../public/image2.jpg";
-import fotoImg3 from "@/../public/image3.jpg";
-import fotoImg4 from "@/../public/image4.jpg";
 import fotoImg5 from "@/../public/image5.jpeg";
 import imageCombo from "@/../public/imagecombo.jpeg";
 import imageSimples from "@/../public/imagesimples.jpeg";
-
+import { handleRegister } from "../_actions/login";
+import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 type Clinica = {
   id: string;
@@ -24,43 +26,66 @@ const CLINICAS: Clinica[] = [
   {
     id: "123",
     nome: "Aplicação do alongamento",
-    href: "/assistente-agenda",
+    href: "/dashboard/assistente-agenda",
     ativa: true,
     imagem: fotoImg2,
   },
   {
     id: "124",
     nome: "Banho de gel",
-    href: "/assistente-agenda",
+    href: "/dashboard/assistente-agenda",
     ativa: true,
     imagem: fotoImg5,
   },
   {
     id: "125",
     nome: "Manicure simples",
-    href: "/assistente-agenda",
+    href: "/dashboard/assistente-agenda",
     ativa: true,
     imagem: imageSimples,
   },
   {
     id: "126",
     nome: "Combo mãos e pés",
-    href: "/assistente-agenda",
+    href: "/dashboard>/assistente-agenda",
     ativa: true,
     imagem: imageCombo,
   },
 ];
 
 export function Professionals() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  async function handleLogin() {
+    await handleRegister("google");
+  }
+
+  const NavLinks = () => (
+    <>
+      {status === "loading" ? null : session ? (
+        <Link
+          href="/dashboard"
+          className="flex items-center justify-center gap-2 bg-[#702e35] hover:bg-[#bb5b6a] text-white py-1 rounded-md px-4"
+        >
+          Meus agendamentos
+        </Link>
+      ) : (
+        <Button onClick={handleLogin}>
+          <LogIn />
+          Meus agendamentos
+        </Button>
+      )}
+    </>
+  );
+
   return (
     <section className="bg-background py-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* título mais compacto no mobile */}
         <h2 className="mb-8 text-center text-2xl font-bold sm:mb-12 sm:text-3xl">
           Serviços Disponíveis
         </h2>
 
-        {/* cards de serviços */}
         <section className="grid grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 lg:grid-cols-4 sm:gap-6">
           {CLINICAS.map((c) => (
             <Card
@@ -71,7 +96,6 @@ export function Professionals() {
                 border border-t-0
               "
             >
-              {/* Imagem colada no topo e mais baixa no mobile */}
               <div className="relative w-full h-36 sm:h-40 lg:h-44">
                 <Image
                   src={c.imagem ?? fotoImg}
@@ -83,7 +107,6 @@ export function Professionals() {
                 />
               </div>
 
-              {/* conteúdo mais compacto no mobile */}
               <CardContent className="space-y-3 p-3 sm:space-y-4 sm:p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -96,9 +119,16 @@ export function Professionals() {
                   )}
                 </div>
 
-                <Link
-                  href={c.href}
+                <button
+                  type="button"
                   aria-label={`Agendar horário na ${c.nome}`}
+                  onClick={() => {
+                    if (status === "authenticated") {
+                      router.push(c.href);
+                    } else if (status !== "loading") {
+                      void handleLogin();
+                    }
+                  }}
                   className="
                     flex w-full items-center justify-center
                     rounded-md bg-[#bb5b6a] py-2
@@ -109,7 +139,7 @@ export function Professionals() {
                 >
                   Agendar horário
                   <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
+                </button>
               </CardContent>
             </Card>
           ))}

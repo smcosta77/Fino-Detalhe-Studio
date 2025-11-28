@@ -14,12 +14,13 @@ async function main() {
     const userId = user.id;
     console.log("[SEED] Usando userId:", userId);
 
+    // --- SERVIÇOS -------------------------------------------------
     for (const s of SERVICOS) {
         await prisma.service.upsert({
             where: { code: s.codigo },
             update: {
                 name: s.nome,
-                price: 0,
+                price: s.preco,       // usa o preço da config
                 duration: s.duracaoMin,
                 status: true,
                 userId,
@@ -27,15 +28,28 @@ async function main() {
             create: {
                 code: s.codigo,
                 name: s.nome,
-                price: 0,
+                price: s.preco,
                 duration: s.duracaoMin,
                 status: true,
                 userId,
             },
         });
     }
+
+    const validCodes = SERVICOS.map((s) => s.codigo);
+    await prisma.service.updateMany({
+        where: {
+            userId,
+            code: { notIn: validCodes },
+        },
+        data: {
+            status: false,
+        },
+    });
+
     console.log("[SEED] Serviços sincronizados a partir de config/salao.ts");
 
+    // --- PROFISSIONAIS --------------------------------------------
     for (const p of PROFISSIONAIS) {
         await prisma.professional.upsert({
             where: { name: p.nome },
@@ -52,6 +66,18 @@ async function main() {
             },
         });
     }
+
+    const validNames = PROFISSIONAIS.map((p) => p.nome);
+    await prisma.professional.updateMany({
+        where: {
+            userId,
+            name: { notIn: validNames },
+        },
+        data: {
+            status: false,
+        },
+    });
+
     console.log("[SEED] Profissionais sincronizados a partir de config/salao.ts");
 }
 

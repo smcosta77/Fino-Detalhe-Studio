@@ -28,11 +28,15 @@ async function callGroq(messages: ChatMessage[]): Promise<string> {
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) throw new Error("GROQ_API_KEY não definida");
 
+    // limita o histórico enviado para reduzir tokens
+    const MAX_HISTORY = 8;
+    const limitedMessages = messages.slice(-MAX_HISTORY);
+
     const payload = {
         model: "llama-3.1-8b-instant",
         messages: [
             { role: "system", content: agendaSalaoSystemPrompt },
-            ...messages,
+            ...limitedMessages,
         ],
         temperature: 0.4,
     };
@@ -49,6 +53,15 @@ async function callGroq(messages: ChatMessage[]): Promise<string> {
     if (!res.ok) {
         const text = await res.text();
         console.error("[AI_AGENDA_GROQ_ERROR]", res.status, text);
+
+        // se bater rate limit, devolve texto amigável em vez de quebrar tudo
+        if (res.status === 429) {
+            return (
+                "Estou a receber muitos pedidos ao mesmo tempo agora 😅\n" +
+                "Pode tentar de novo daqui a alguns segundos?"
+            );
+        }
+
         throw new Error("Erro ao contactar serviço de IA (Groq).");
     }
 
@@ -56,6 +69,8 @@ async function callGroq(messages: ChatMessage[]): Promise<string> {
     const reply: string =
         data.choices?.[0]?.message?.content?.trim() ??
         "Desculpa, não consegui responder agora.";
+
+    console.log("[AI_AGENDA_GROQ_REPLY]", reply);
 
     return reply;
 }
@@ -181,13 +196,15 @@ export async function POST(req: Request) {
         const { cleanText, booking } = extractBookingJson(reply);
 
         let finalText = cleanText;
-        let completed = false; // <- flag para o frontend
+        let completed = false;
+        let bookingDate: string | undefined; // 👈 novo
 
         if (booking?.confirmado) {
             const result = await createAppointmentFromBooking(booking);
 
             if (result.status === "created") {
                 completed = true;
+                bookingDate = booking.date; // 👈 manda a data de volta
 
                 finalText += `
 
@@ -202,7 +219,7 @@ O agendamento NÃO foi criado. Por favor, escolha outro horário ou outra profis
             }
         }
 
-        return NextResponse.json({ reply: finalText, completed });
+        return NextResponse.json({ reply: finalText, completed, date: bookingDate });
     } catch (error) {
         console.error("[AI_AGENDA_ERROR]", error);
         return NextResponse.json(

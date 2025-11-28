@@ -66,6 +66,7 @@ export default function AssistenteAgendaPage() {
         reply?: string;
         error?: string;
         completed?: boolean;
+        date?: string;
       };
 
       const assistantMessage: ChatMessage = {
@@ -82,9 +83,13 @@ export default function AssistenteAgendaPage() {
       // 1) Se a API disser que completou (completed = true), redireciona
       // 2) OU se a mensagem do cliente foi claramente uma confirmação ("sim", "confirmo", etc.), redireciona
       if (data.completed || isConfirmation) {
+        const target = data.date
+          ? `/dashboard/agenda?date=${data.date}`
+          : "/dashboard/agenda";
+
         setTimeout(() => {
-          router.push("/");
-        }, 2000); // 2s para o cliente ler a confirmação
+          router.push(target);
+        }, 2000);
       }
     } catch (err) {
       console.error(err);
@@ -131,8 +136,8 @@ export default function AssistenteAgendaPage() {
             >
               <div
                 className={`max-w-[80%] rounded-lg px-3 py-2 text-sm md:text-base whitespace-pre-wrap ${m.role === "user"
-                    ? "bg-blue-600 text-white"
-                    : "bg-white border text-slate-900"
+                  ? "bg-blue-600 text-white"
+                  : "bg-white border text-slate-900"
                   }`}
               >
                 {m.content}

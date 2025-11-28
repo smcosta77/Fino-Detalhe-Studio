@@ -52,7 +52,6 @@ export async function POST(req: Request) {
         if (
             !body.userId ||
             !body.clientName ||
-            !body.clientEmail ||
             !body.clientPhone ||
             !body.serviceId ||
             !body.professionalId ||
