@@ -13,15 +13,20 @@ type Professional = {
   name: string;
 };
 
+type AppointmentService = {
+  service: Service;
+};
+
 type Appointment = {
   id: string;
-  name: string; // nome do cliente
+  name: string;
   email: string;
   phone: string;
-  appointmentDate: string; // ISO
-  time: string; // "HH:mm"
-  service: Service;
-  professional: Professional;
+  appointmentDate: string;
+  time: string;
+  service: Service | null;          // serviço principal
+  professional: Professional | null;
+  services?: AppointmentService[];  // todos os serviços do agendamento
 };
 
 type ApiResponse = {
@@ -166,36 +171,60 @@ export default function AgendaDoDiaPage() {
                       </div>
                     ) : (
                       <div className="flex flex-col gap-2">
-                        {slotAppointments.map((appt) => (
-                          <div
-                            key={appt.id}
-                            className="border rounded-md bg-white px-3 py-2 text-xs md:text-sm flex flex-col gap-1"
-                          >
-                            <div className="flex justify-between gap-2">
-                              <span className="font-semibold text-slate-800">
-                                {appt.service?.name ?? "Serviço"}
-                              </span>
-                              <span className="text-[11px] text-slate-500">
-                                {appt.time}
-                              </span>
-                            </div>
+                        {slotAppointments.map((appt) => {
+                          const temMultiplos = appt.services && appt.services.length > 0;
 
-                            <div className="text-[11px] md:text-xs text-slate-600">
-                              Profissional:{" "}
-                              <span className="font-medium">
-                                {appt.professional?.name ?? "-"}
-                              </span>
-                            </div>
+                          const labelServico = temMultiplos
+                            ? appt.services!.map((s) => s.service.name).join(" + ")
+                            : appt.service?.name ?? "Serviço";
 
-                            <div className="text-[11px] md:text-xs text-slate-600">
-                              Cliente:{" "}
-                              <span className="font-medium">
-                                {appt.name}
-                              </span>{" "}
-                              · {appt.phone}
+                          const totalDuration = temMultiplos
+                            ? appt.services!.reduce(
+                              (sum, s) => sum + (s.service.duration ?? 0),
+                              0
+                            )
+                            : appt.service?.duration ?? 0;
+
+                          return (
+                            <div
+                              key={appt.id}
+                              className="border rounded-md bg-white px-3 py-2 text-xs md:text-sm flex flex-col gap-1"
+                            >
+                              <div className="flex justify-between gap-2">
+                                <span className="font-semibold text-slate-800">
+                                  {labelServico}
+                                </span>
+                                <span className="text-[11px] text-slate-500">
+                                  {appt.time}
+                                </span>
+                              </div>
+
+                              {totalDuration > 0 && (
+                                <div className="text-[11px] text-slate-500">
+                                  Duração total:{" "}
+                                  <span className="font-medium">
+                                    {totalDuration} min
+                                  </span>
+                                </div>
+                              )}
+
+                              <div className="text-[11px] md:text-xs text-slate-600">
+                                Profissional:{" "}
+                                <span className="font-medium">
+                                  {appt.professional?.name ?? "-"}
+                                </span>
+                              </div>
+
+                              <div className="text-[11px] md:text-xs text-slate-600">
+                                Cliente:{" "}
+                                <span className="font-medium">
+                                  {appt.name}
+                                </span>{" "}
+                                · {appt.phone}
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     )}
                   </div>

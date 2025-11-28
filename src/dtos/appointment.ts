@@ -1,13 +1,11 @@
-// src/dtos/appointment.ts
-export interface CreateAppointmentDTO {
-    userId: string;          // id do salão (User)
+export type CreateAppointmentDTO = {
+    userId: string;
     clientName: string;
     clientEmail: string;
     clientPhone: string;
-
-    serviceId: string;
+    serviceId: string;      // serviço principal (para compatibilidade)
+    serviceIds?: string[];  // 🆕 lista completa de serviços
     professionalId: string;
-
-    date: string;            // "2025-11-24"
-    time: string;            // "15:30"
-}
+    date: string;           // YYYY-MM-DD
+    time: string;           // HH:mm
+};

@@ -8,43 +8,55 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // GET /api/appointments?date=YYYY-MM-DD
-// "calendário" do dia: lista todos os agendamentos com serviço e profissional
 export async function GET(req: Request) {
-    const url = new URL(req.url);
-    const dateParam = url.searchParams.get("date");
+    try {
+        const url = new URL(req.url);
+        const dateParam = url.searchParams.get("date");
 
-    if (!dateParam) {
+        if (!dateParam) {
+            return NextResponse.json(
+                { error: "Parâmetro 'date' (YYYY-MM-DD) é obrigatório." },
+                { status: 400 }
+            );
+        }
+
+        const start = new Date(`${dateParam}T00:00:00.000`);
+        const end = new Date(`${dateParam}T23:59:59.999`);
+
+        const appointments = await prisma.appointment.findMany({
+            where: {
+                appointmentDate: {
+                    gte: start,
+                    lte: end,
+                },
+            },
+            include: {
+                professional: true,
+                // se ainda quiser manter o “serviço principal”
+                service: true,
+                // 👇 lista de serviços do agendamento
+                services: {
+                    include: {
+                        service: true, // vem { serviceId, appointmentId, service: { ... } }
+                    },
+                },
+            },
+            orderBy: {
+                appointmentDate: "asc",
+            },
+        });
+
+        return NextResponse.json({ items: appointments });
+    } catch (error) {
+        console.error("[APPOINTMENTS_GET_ERROR]", error);
         return NextResponse.json(
-            { error: "Parâmetro 'date' (YYYY-MM-DD) é obrigatório." },
-            { status: 400 }
+            { error: "Erro ao carregar agendamentos." },
+            { status: 500 }
         );
     }
-
-    // início e fim do dia
-    const start = new Date(`${dateParam}T00:00:00.000`);
-    const end = new Date(`${dateParam}T23:59:59.999`);
-
-    const appointments = await prisma.appointment.findMany({
-        where: {
-            appointmentDate: {
-                gte: start,
-                lte: end,
-            },
-        },
-        include: {
-            service: true,
-            professional: true,
-        },
-        orderBy: {
-            appointmentDate: "asc",
-        },
-    });
-
-    return NextResponse.json({ items: appointments });
 }
 
-// POST /api/appointments
-// body: CreateAppointmentDTO
+// POST continua como já estava (se ainda não mexemos para multi-serviço)
 export async function POST(req: Request) {
     try {
         const body = (await req.json()) as Partial<CreateAppointmentDTO>;

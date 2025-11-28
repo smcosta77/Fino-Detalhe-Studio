@@ -5,49 +5,60 @@ import prisma from "@/lib/prisma";
 import type { CreateAppointmentDTO } from "@/dtos/appointment";
 
 export async function createAppointment(dto: CreateAppointmentDTO) {
-    const {
-        userId,
-        clientName,
-        clientEmail,
-        clientPhone,
-        serviceId,
-        professionalId,
-        date,
-        time,
-    } = dto;
+  const {
+    userId,
+    clientName,
+    clientEmail,
+    clientPhone,
+    serviceId,
+    serviceIds,
+    professionalId,
+    date,
+    time,
+  } = dto;
 
-    // monta DateTime a partir de "data + hora"
-    const appointmentDate = new Date(`${date}T${time}:00`);
+  const appointmentDate = new Date(`${date}T${time}:00`);
 
-    // valida se já existe agendamento no mesmo horário para esse profissional
-    const conflict = await prisma.appointment.findFirst({
-        where: {
-            professionalId,
-            appointmentDate,
-        },
-    });
+  // validamos conflito por horário exato + profissional (mesmo comportamento anterior)
+  const conflict = await prisma.appointment.findFirst({
+    where: {
+      professionalId,
+      appointmentDate,
+    },
+  });
 
-    if (conflict) {
-        throw new Error("Já existe um agendamento para esse horário/profissional.");
-    }
+  if (conflict) {
+    throw new Error("Já existe um agendamento para esse horário/profissional.");
+  }
 
-    const appointment = await prisma.appointment.create({
-        data: {
-            name: clientName,
-            email: clientEmail,
-            phone: clientPhone,
-            appointmentDate,
-            time, // campo string do schema
+  // garante que temos uma lista de serviços (pelo menos o principal)
+  const allServiceIds = serviceIds && serviceIds.length > 0
+    ? serviceIds
+    : [serviceId];
 
-            userId,
-            serviceId,
-            professionalId,
-        },
-        include: {
-            service: true,
-            professional: true,
-        },
-    });
+  // cria o agendamento principal
+  const appointment = await prisma.appointment.create({
+    data: {
+      name: clientName,
+      email: clientEmail,
+      phone: clientPhone,
+      appointmentDate,
+      time,
+      userId,
+      serviceId,        // principal
+      professionalId,
+      services: {       // 🆕 cria as linhas na tabela de junção
+        create: allServiceIds.map((sid) => ({ serviceId: sid })),
+      },
+    },
+    include: {
+      service: true,
+      professional: true,
+      services: {
+        include: { service: true },
+      },
+    },
+  });
 
-    return appointment;
+  return appointment;
 }
