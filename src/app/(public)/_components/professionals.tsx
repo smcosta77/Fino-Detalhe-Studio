@@ -197,15 +197,7 @@ export function Professionals() {
               </a>
 
               {/* TikTok (ícone genérico de vídeo/música) */}
-              <a
-                href="#"
-                target="_blank"
-                rel="noreferrer"
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-slate-800 hover:bg-slate-50 transition-colors"
-                aria-label="Acompanhe no TikTok"
-              >
-                <Music2 className="h-5 w-5" />
-              </a>
+
             </div>
           </div>
         </div>

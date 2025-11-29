@@ -133,9 +133,7 @@ export default function AssistenteAgenda() {
         setProfessionals(profsJson.items ?? []);
 
         // defaults
-        if (servicesJson.items?.length && selectedServiceIds.length === 0) {
-          setSelectedServiceIds([servicesJson.items[0].id]);
-        }
+
         if (profsJson.items?.length && !selectedProfessionalId) {
           setSelectedProfessionalId(profsJson.items[0].id);
         }
@@ -507,7 +505,7 @@ export default function AssistenteAgenda() {
                       type="tel"
                       value={clientPhone}
                       onChange={(e) => setClientPhone(e.target.value)}
-                      placeholder="11999999999"
+                      placeholder="11 91234-5678"
                       className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#bb5b6a]"
                     />
                   </div>
